@@ -1,0 +1,15 @@
+# Node modules
+node_modules/
+
+# Environment variables
+*.env
+
+# output dir
+dist/
+build/
+# Next.js build output
+.next/
+next-env.d.ts
+
+# debug 
+*.txt
