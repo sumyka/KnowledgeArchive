@@ -1,0 +1,23 @@
+{
+	"name": "@knowledge-archive/client",
+	"version": "0.0.1-dev",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start"
+	},
+	"dependencies": {
+		"next": "^16.0.6",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0"
+	},
+	"devDependencies": {
+		"@next/eslint-plugin-next": "^16.0.6",
+		"@types/node": "^24.10.1",
+		"@types/react": "^19.2.7",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^7.0.1",
+		"typescript": "^5.9.3"
+	}
+}

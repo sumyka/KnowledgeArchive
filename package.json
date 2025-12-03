@@ -1,0 +1,30 @@
+{
+	"name": "knowledge-archive",
+	"version": "0.0.1-dev",
+	"description": "Enter the ISBN to add the book title and cover to your bookshelf!",
+	"private": true,
+	"workspaces": [
+		"src/client",
+		"src/server"
+	],
+	"scripts": {
+		"dev": "npm run dev --workspace=client & npm run dev --workspace=server",
+		"dev:client": "npm run dev --workspace=client",
+		"dev:server": "npm run dev --workspace=server",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"type-check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@eslint/compat": "^2.0.0",
+		"@typescript-eslint/eslint-plugin": "^8.48.1",
+		"@typescript-eslint/parser": "^8.48.1",
+		"eslint": "^9.39.1",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-import": "^2.32.0",
+		"eslint-plugin-prettier": "^5.5.4",
+		"prettier": "^3.7.4",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.48.1"
+	}
+}
