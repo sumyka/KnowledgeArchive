@@ -5,7 +5,6 @@ export default function Sidebar() {
 	return (
 		// md:h-screen md:sticky md:top-0 を追加
 		<aside className="w-full md:w-64 bg-white border-r border-gray-200 p-6 flex flex-col md:h-screen md:sticky md:top-0">
-			
 			{/* --- 上部：統計情報エリア --- */}
 			<div>
 				<h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
@@ -45,7 +44,7 @@ export default function Sidebar() {
 
 			{/* --- 下部：SNSリンク & Copyright --- */}
 			<div className="mt-auto pt-8 border-t border-gray-100 mb-4">
-        <p className="text-sm text-gray-400 mb-4">If you need Contact me.</p>
+				<p className="text-sm text-gray-400 mb-4">If you need Contact me.</p>
 				<div className="flex items-center gap-4 mb-4">
 					{/* GitHub Link */}
 					<a
@@ -55,7 +54,7 @@ export default function Sidebar() {
 						className="text-gray-400 hover:text-gray-800 transition-colors"
 						aria-label="GitHub"
 					>
-            			{/* GitHub Logo */}
+						{/* GitHub Logo */}
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="20"
@@ -93,10 +92,8 @@ export default function Sidebar() {
 					</a>
 				</div>
 
-        		{/* Copyright */}
-				<p className="text-xs text-gray-400">
-					&copy; 2025 Knowledge Archive
-				</p>
+				{/* Copyright */}
+				<p className="text-xs text-gray-400">&copy; 2025 Knowledge Archive</p>
 			</div>
 		</aside>
 	);
