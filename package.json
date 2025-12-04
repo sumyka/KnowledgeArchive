@@ -1,6 +1,6 @@
 {
 	"name": "knowledge-archive",
-	"version": "0.0.1-dev",
+	"version": "0.1.0-dev",
 	"description": "Enter the ISBN to add the book title and cover to your bookshelf!",
 	"private": true,
 	"workspaces": [
