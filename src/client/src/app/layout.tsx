@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
+import './globals.css';
+import Header from './_components/Header';
 
 export const metadata: Metadata = {
 	title: 'Knowledge Archive',
-	description: 'Enter the ISBN to add the book title and cover to your bookshelf!',
+	description:
+		'Enter the ISBN to add the book title and cover to your bookshelf!',
 };
 
 export default function RootLayout({
@@ -12,7 +15,14 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="ja">
-			<body>{children}</body>
+			<body
+				suppressHydrationWarning={true}
+				className="bg-gray-50 text-gray-900"
+			>
+				<Header />
+
+				<main>{children}</main>
+			</body>
 		</html>
 	);
 }
