@@ -1,8 +1,27 @@
-export default function Home() {
-	return (
-		<main>
-			<h1>Knowledge Archive</h1>
-			<p>Enter the ISBN to add the book title and cover to your bookshelf!</p>
-		</main>
-	);
+import Sidebar from './_components/Sidebar';
+
+export default function Page() {
+  return (
+    <div className="flex flex-col md:flex-row min-h-screen">
+      {/* 1. 左側：サイドバー */}
+      <Sidebar />
+
+      {/* 2. 右側：メインコンテンツエリア */}
+      <div className="flex-1 p-8 bg-gray-50">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* 本追加のエリア */}
+          <section className="bg-white p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg font-bold text-gray-800 mb-4">書籍を追加する</h2>
+            <p className="text-gray-500">ISBN入力フォームを作成</p>
+          </section>
+
+          <section>
+             {/* 本棚 */}
+             <p className="text-gray-500">プレースホルダー</p>
+          </section>
+          
+        </div>
+      </div>
+    </div>
+  );
 }
