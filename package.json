@@ -12,7 +12,7 @@
 		"dev:client": "npm run dev --workspace=client",
 		"dev:server": "npm run dev --workspace=server",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx ./src --fix",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"type-check": "tsc --noEmit"
 	},
 	"devDependencies": {
