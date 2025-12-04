@@ -13,3 +13,6 @@ next-env.d.ts
 
 # debug 
 *.txt
+
+# Pull Request & issues
+draft-md/
