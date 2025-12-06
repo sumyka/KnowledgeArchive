@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 
+import searchISBN from '../utils/searchISBN';
+
 const app = express();
 const port = 4000;
 const HOST = '0.0.0.0';
@@ -20,19 +22,45 @@ app.get('/', (req: Request, res: Response) => {
 	res.send('Knowledge Archive API is running!');
 });
 
+type BookRequestBody = {
+	isbn: string;
+};
+
 // 書籍追加エンドポイント
-app.post('/api/books', (req: Request, res: Response) => {
-	const { isbn } = req.body;
+app.post(
+	'/api/books',
+	async (
+		req: Request<Record<string, never>, Record<string, never>, BookRequestBody>,
+		res: Response
+	) => {
+		const { isbn } = req.body;
 
-	console.log(`[Server] 受け取ったISBN: ${isbn}`);
+		console.log(`Request received for ISBN: ${isbn}`);
 
-	// TODO: ISBNを使って書籍情報を取得する。<- OpenBD予定
-	res.status(200).json({
-		success: true,
-		message: `ISBN ${isbn} を受け付けました`,
-		isbn,
-	});
-});
+		try {
+			const bookData = await searchISBN(isbn);
+
+			if (bookData) {
+				res.status(200).json({
+					success: true,
+					message: '書籍が見つかりました',
+					data: bookData,
+				});
+			} else {
+				res.status(404).json({
+					success: false,
+					message: '書籍情報が見つかりませんでした',
+				});
+			}
+		} catch (err: unknown) {
+			console.error(err);
+			res.status(500).json({
+				success: false,
+				message: 'サーバー内部エラーが発生しました',
+			});
+		}
+	}
+);
 
 // サーバー起動
 app.listen(port, HOST, () => {

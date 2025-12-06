@@ -3,7 +3,18 @@
 import React, { useState, useRef, ClipboardEvent, ChangeEvent } from 'react';
 import { normalizeIsbn } from '../../utils/checkISBN';
 
-export default function IsbnForm() {
+// 親コンポーネントに書籍の型情報を提供
+interface BookData {
+	title: string;
+	imageUrl: string | null;
+};
+
+// Propsの定義
+type IsbnFormProps = {
+	onBookFound: (newBook: BookData) => void;
+};
+
+export default function IsbnForm({ onBookFound }: IsbnFormProps) {
 	// 初期値
 	const initialParts = {
 		part1: '978',
@@ -13,9 +24,9 @@ export default function IsbnForm() {
 		part5: '',
 	};
 
-	// 3桁-1桁-6桁-2桁-1桁 の各パート
 	const [parts, setParts] = useState(initialParts);
 	const [error, setError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
 	const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
 	// 入力ハンドラ
@@ -59,7 +70,6 @@ export default function IsbnForm() {
 			return;
 		}
 
-		// 978-4-xxxxxx-xx-x に分割
 		const part1 = normalized.slice(0, 3);
 		const part2 = normalized.slice(3, 4);
 		const part3 = normalized.slice(4, 10);
@@ -67,8 +77,6 @@ export default function IsbnForm() {
 		const part5 = normalized.slice(12, 13);
 
 		setParts({ part1, part2, part3, part4, part5 });
-
-		// 最後のフィールドへフォーカス
 		inputRefs.current[4]?.focus();
 	};
 
@@ -84,9 +92,11 @@ export default function IsbnForm() {
 			return;
 		}
 
+		setLoading(true);
+		setError(null);
+
 		try {
 			// サーバーへ送信 (POST)
-			// ※ここでバックエンド(ポート4000)へデータを投げます
 			const response = await fetch('http://localhost:4000/api/books', {
 				method: 'POST',
 				headers: {
@@ -96,23 +106,35 @@ export default function IsbnForm() {
 			});
 
 			if (!response.ok) {
-				throw new Error('サーバーエラーが発生しました');
+				// 200以外のステータスコードの場合はエラー処理
+				const errData = await response.json();
+				throw new Error(errData.message || '書籍が見つかりませんでした');
 			}
 
-			const data = await response.json();
-			console.log('API送信成功:', data);
-			alert(`本を追加しました: ${data.message || validIsbn}`);
+			const resJson = await response.json();
 
-			// 成功したらフォームをリセット
-			setParts(initialParts);
-			inputRefs.current[0]?.focus();
-		} catch (err) {
+			if (resJson.success && resJson.data) {
+				onBookFound(resJson.data);
+
+				// フォームをリセット
+				setParts(initialParts);
+				inputRefs.current[0]?.focus();
+			} else {
+				throw new Error('予期しないレスポンス形式です');
+			}
+		} catch (err: unknown) {
 			console.error(err);
-			setError('サーバーとの通信に失敗しました');
+
+			if (err instanceof Error) {
+				setError(err.message);
+			} else {
+				setError('サーバーとの通信に失敗しました');
+			}
+		} finally {
+			setLoading(false); // ローディング終了
 		}
 	};
 
-	// リセットボタン
 	const handleReset = () => {
 		setParts(initialParts);
 		setError(null);
@@ -124,14 +146,14 @@ export default function IsbnForm() {
 			<div className="flex flex-col gap-2">
 				<label className="text-sm font-medium text-gray-700">ISBNコード</label>
 
+				{/* 1. 3桁 GS1 接頭語*/}
 				<div className="flex items-center gap-2">
-					{/* 1. 3桁 GS1 接頭語*/}
 					<input
 						ref={(el) => {
 							if (el) inputRefs.current[0] = el;
 						}}
 						type="text"
-						className="w-14 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50 text-gray-600"
+						className="w-14 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 text-gray-600"
 						value={parts.part1}
 						onChange={(e) => handleChange(e, 'part1', 0, 3)}
 						onPaste={handlePaste}
@@ -145,7 +167,7 @@ export default function IsbnForm() {
 							if (el) inputRefs.current[1] = el;
 						}}
 						type="text"
-						className="w-10 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50 text-gray-600"
+						className="w-10 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 text-gray-600"
 						value={parts.part2}
 						onChange={(e) => handleChange(e, 'part2', 1, 1)}
 						onPaste={handlePaste}
@@ -159,7 +181,7 @@ export default function IsbnForm() {
 							if (el) inputRefs.current[2] = el;
 						}}
 						type="text"
-						className="w-24 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+						className="w-24 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
 						value={parts.part3}
 						onChange={(e) => handleChange(e, 'part3', 2, 6)}
 						onPaste={handlePaste}
@@ -174,7 +196,7 @@ export default function IsbnForm() {
 							if (el) inputRefs.current[3] = el;
 						}}
 						type="text"
-						className="w-12 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+						className="w-12 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
 						value={parts.part4}
 						onChange={(e) => handleChange(e, 'part4', 3, 2)}
 						onPaste={handlePaste}
@@ -189,7 +211,7 @@ export default function IsbnForm() {
 							if (el) inputRefs.current[4] = el;
 						}}
 						type="text"
-						className="w-10 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+						className="w-10 p-2 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
 						value={parts.part5}
 						onChange={(e) => handleChange(e, 'part5', 4, 1)}
 						onPaste={handlePaste}
@@ -200,15 +222,18 @@ export default function IsbnForm() {
 					{/* 追加ボタン */}
 					<button
 						type="submit"
-						className="ml-auto md:ml-4 px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap"
+						disabled={loading}
+						className={`ml-auto md:ml-4 px-6 py-2 text-white font-medium rounded-md shadow-sm whitespace-nowrap transition-colors
+                            ${loading ? 'bg-blue-400 cursor-wait' : 'bg-blue-600 hover:bg-blue-700'}`}
 					>
-						追加
+						{loading ? '検索中...' : '追加'}
 					</button>
 
 					{/* リセットボタン */}
 					<button
 						type="button"
 						onClick={handleReset}
+						disabled={loading}
 						className="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 transition-colors shadow-sm whitespace-nowrap"
 					>
 						リセット
