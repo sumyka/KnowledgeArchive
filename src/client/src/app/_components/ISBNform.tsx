@@ -30,13 +30,13 @@ export default function IsbnForm() {
 		setParts((prev) => ({ ...prev, [key]: value }));
 		setError(null);
 
-		// 自動フォーカス移動
+		// 最大桁まで入力したら次のフィールドへフォーカス
 		if (value.length >= maxLength && index < 4) {
 			inputRefs.current[index + 1]?.focus();
 		}
 	};
 
-	// バックスペースでフォーカスを戻す
+	// バックスペースで前へ戻る
 	const handleKeyDown = (
 		e: React.KeyboardEvent<HTMLInputElement>,
 		index: number
@@ -68,12 +68,12 @@ export default function IsbnForm() {
 
 		setParts({ part1, part2, part3, part4, part5 });
 
-		// 最後へフォーカス
+		// 最後のフィールドへフォーカス
 		inputRefs.current[4]?.focus();
 	};
 
-	// 追加（送信）
-	const handleSubmit = (e: React.FormEvent) => {
+	// 追加（送信）処理
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		const rawInput = `${parts.part1}${parts.part2}${parts.part3}${parts.part4}${parts.part5}`;
@@ -84,12 +84,32 @@ export default function IsbnForm() {
 			return;
 		}
 
-		console.log(`API送信: ${validIsbn}`);
-		alert(`本を追加します: ${validIsbn}`);
+		try {
+			// サーバーへ送信 (POST)
+			// ※ここでバックエンド(ポート4000)へデータを投げます
+			const response = await fetch('http://localhost:4000/api/books', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ isbn: validIsbn }),
+			});
 
-		// リセット
-		setParts(initialParts);
-		inputRefs.current[0]?.focus();
+			if (!response.ok) {
+				throw new Error('サーバーエラーが発生しました');
+			}
+
+			const data = await response.json();
+			console.log('API送信成功:', data);
+			alert(`本を追加しました: ${data.message || validIsbn}`);
+
+			// 成功したらフォームをリセット
+			setParts(initialParts);
+			inputRefs.current[0]?.focus();
+		} catch (err) {
+			console.error(err);
+			setError('サーバーとの通信に失敗しました');
+		}
 	};
 
 	// リセットボタン
