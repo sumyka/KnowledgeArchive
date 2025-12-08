@@ -2,7 +2,7 @@
 interface BookData {
 	title: string;
 	imageUrl: string | null;
-};
+}
 
 export default async function searchISBN(
 	isbn: string

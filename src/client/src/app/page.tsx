@@ -9,7 +9,7 @@ import IsbnForm from './_components/ISBNform';
 interface BookData {
 	title: string;
 	imageUrl: string | null;
-};
+}
 
 export default function Page() {
 	const [books, setBooks] = useState<BookData[]>([]);

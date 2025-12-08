@@ -7,7 +7,7 @@ import { normalizeIsbn } from '../../utils/checkISBN';
 interface BookData {
 	title: string;
 	imageUrl: string | null;
-};
+}
 
 // Propsの定義
 type IsbnFormProps = {
